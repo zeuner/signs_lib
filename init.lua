@@ -487,24 +487,7 @@ signs_lib.update_sign = function(pos, fields, owner)
 	end
 	local text = meta:get_string("text")
 	if text == nil then return end
-	local objects = minetest.get_objects_inside_radius(pos, 0.5)
-	local found
-	for _, v in ipairs(objects) do
-		local e = v:get_luaentity()
-		if e and e.name == "signs:text" then
-			if found then
-				v:remove()
-			else
-				set_obj_text(v, text, new)
-				found = true
-			end
-		end
-	end
-	if found then
-		return
-	end
 
-	-- if there is no entity
 	local sign_info
 	local signnode = minetest.get_node(pos)
 	if signnode.name == "signs:sign_yard" then
@@ -524,10 +507,33 @@ signs_lib.update_sign = function(pos, fields, owner)
 	if sign_info == nil then
 		return
 	end
-	local text = minetest.add_entity({x = pos.x + sign_info.delta.x,
-										y = pos.y + sign_info.delta.y,
-										z = pos.z + sign_info.delta.z}, "signs:text")
-	text:setyaw(sign_info.yaw)
+
+	local objects = minetest.get_objects_inside_radius(pos, 0.5)
+	local sign_obj
+	for _, v in ipairs(objects) do
+		local e = v:get_luaentity()
+		if e and e.name == "signs:text" then
+			if sign_obj then
+				v:remove()
+			else
+				set_obj_text(v, text, new)
+				sign_obj = v
+			end
+		end
+	end
+
+	-- if there is no entity, create one
+	if not sign_obj then
+		sign_obj = minetest.add_entity(pos, "signs:text")
+	end
+
+	-- set pos and yaw here. solves issue #2
+	sign_obj:setpos({
+		x = pos.x + sign_info.delta.x,
+		y = pos.y + sign_info.delta.y,
+		z = pos.z + sign_info.delta.z,
+	})
+	sign_obj:setyaw(sign_info.yaw)
 end
 
 -- What kind of sign do we need to place, anyway?
