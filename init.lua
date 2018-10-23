@@ -114,7 +114,15 @@ signs_lib.sign_post_model = {
 }
 
 -- Boilerplate to support localized strings if intllib mod is installed.
-local S = rawget(_G, "intllib") and intllib.Getter() or function(s) return s end
+local MP = minetest.get_modpath(
+    minetest.get_current_modname(
+    )
+)
+
+local S, NS = dofile(
+    MP .. "/intllib.lua"
+)
+
 signs_lib.gettext = S
 
 -- the list of standard sign nodes
