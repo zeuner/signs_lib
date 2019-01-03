@@ -17,7 +17,7 @@ local current_keyword = minetest.settings:get("interact_keyword") or "iaccept"
 
 signs_lib = {}
 signs_lib.path = minetest.get_modpath(minetest.get_current_modname())
-screwdriver = screwdriver or {}
+screwdriver = (rawget(_G, "screwdriver") and screwdriver) or {}
 
 -- Load support for intllib.
 local S, NS = dofile(signs_lib.path .. "/intllib.lua")
